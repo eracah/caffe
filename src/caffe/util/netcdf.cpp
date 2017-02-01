@@ -256,7 +256,6 @@ namespace caffe {
 			offset*=dims[i];
 			start[i]=0;
 		}
-		
 		//read the data
 		if(vtype == NC_DOUBLE){
 			for(unsigned int i=0; i<netcdf_variables_.size(); i++){	

@@ -40,20 +40,20 @@ namespace caffe {
 		//determine layer size
 		int top_size = this->layer_param_.top_size();
 		netcdf_blobs_.resize(top_size);
-
+		
 		const int MIN_DATA_DIM = 1;
 		const int MAX_DATA_DIM = INT_MAX;
 		
 		for (int i = 0; i < top_size; ++i) netcdf_blobs_[i] = shared_ptr<Blob<Dtype> >(new Blob<Dtype>());
 		if(!first_dim_is_batched_){
 			for (int i = 0; i < top_size; ++i) {
-				netcdf_load_nd_dataset(file_id, netcdf_variables_[this->layer_param_.top(i)],
+				netcdf_load_nd_dataset(file_id, netcdf_variables_,
 										MIN_DATA_DIM, MAX_DATA_DIM, netcdf_blobs_[i].get());
 			}
 		}
 		else{
 			for (int i = 0; i < top_size; ++i) {
-				netcdf_load_nd_dataset_transposed(file_id, netcdf_variables_[this->layer_param_.top(i)],
+				netcdf_load_nd_dataset_transposed(file_id, netcdf_variables_,
 										MIN_DATA_DIM, MAX_DATA_DIM, netcdf_blobs_[i].get());
 			}
 		}
@@ -116,21 +116,13 @@ namespace caffe {
 		
 		//read list of netcdf variables which should be read from the file
 		for(unsigned int i=0; i<top_size; i++){
-			string topname=this->layer_param_.top(i);
-			if(topname.find("data") != std::string::npos){
-				num_variables_[topname] = this->layer_param_.netcdf_data_param().variable_data_size();
-				for(unsigned int j=0; j<num_variables_[topname]; j++){
-					netcdf_variables_[topname].push_back(this->layer_param_.netcdf_data_param().variable_data(j));
-				}
+			num_variables_ = this->layer_param_.netcdf_data_param().variable_data_size();
+			for(unsigned int j=0; j<num_variables_; j++){
+				netcdf_variables_.push_back(this->layer_param_.netcdf_data_param().variable_data(j));
 			}
-			else if(topname.find("label") != std::string::npos){
-				num_variables_[topname] = this->layer_param_.netcdf_data_param().variable_label_size();
-				for(unsigned int j=0; j<num_variables_[topname]; j++){
-					netcdf_variables_[topname].push_back(this->layer_param_.netcdf_data_param().variable_label(j));
-				}
-			}
-			LOG(INFO) << "Number of NetCDF " << topname << " variables: " << num_variables_[topname];
-			CHECK_GE(num_variables_[topname], 1) << "Must have at least 1 NetCDF variable for " << topname << " listed.";
+			
+			LOG(INFO) << "Number of NetCDF " << " variables: " << num_variables_;
+			CHECK_GE(num_variables_, 1) << "Must have at least 1 NetCDF variable"<< " listed.";
 		}
 		
 		//determine if the first dimension is batch dimension. if set to false, we assume that each file contains a single batch
