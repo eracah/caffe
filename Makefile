@@ -328,6 +328,11 @@ ifeq ($(USE_CUDNN), 1)
 	COMMON_FLAGS += -DUSE_CUDNN
 endif
 
+ifeq ($(USE_NETCDF), 1)
+	LIBRARIES += netcdf
+	COMMON_FLAGS += -DUSE_NETCDF
+endif
+
 # NCCL acceleration configuration
 ifeq ($(USE_NCCL), 1)
 	LIBRARIES += nccl
