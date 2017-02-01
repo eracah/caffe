@@ -1,0 +1,55 @@
+#%Module1.0
+## 
+
+## Required internal variables
+
+set		name		caffe
+set		version		master
+set		root	    /global/homes/r/racah/projects/caffe-netcdf/caffe_built
+set             req_env     /usr/common/software/python/2.7-anaconda/envs/caffe_env/
+## List conflicting modules here
+
+conflict $name 
+#python deeplearning
+
+## List prerequisite modules here
+
+# prereq
+
+## Required for SVN hook to generate SWDB entry
+
+set		fullname	Caffe
+set		externalurl	http://caffe.berkeleyvision.org/
+set		nerscurl	http://caffe.berkeleyvision.org/
+set		maincategory	applications
+set		subcategory	programming
+set		description	"Caffe is a deep learning framework"
+
+## Required for "module help ..."
+
+proc ModulesHelp { } {
+  global description nerscurl externalurl
+  puts stderr "Description - $description"
+  puts stderr "NERSC Docs  - $nerscurl"
+  puts stderr "Other Docs  - $externalurl"
+}
+
+## Required for "module display ..." and SWDB
+
+module-whatis			"$description"
+
+prepend-path    PYTHONPATH      $req_env/lib/python$version/site-packages/:$req_env/bin:$req_env/lib/python27.zip:$req_env/lib/python$version:$req_env/lib/python$version/plat-linux2:$req_env/lib/python$version/lib-tk:$req_env/lib/python$version/lib-old:$req_env/lib/python$version/lib-dynload:$req_env/lib/python$version/site-packages:$req_env/lib/python$version/site-packages/setuptools-23.0.0-py$version.egg:$req_env/lib/python$version/site-packages/IPython/extensions
+prepend-path    PATH      $req_env/bin
+prepend-path PATH $root/build/tools
+prepend-path LD_LIBRARY_PATH $req_env/lib:$req_env/lib/python2.7
+prepend-path LD_LIBRARY_PATH $root/build/lib
+setenv CAFFE_HOME $root
+setenv CAFFE_EXAMPLES $root/examples
+prepend-path PYTHONPATH $root/python
+prepend-path PATH $req_env/bin
+
+
+#if { [ module-info mode load ] } {
+#
+#}
+
