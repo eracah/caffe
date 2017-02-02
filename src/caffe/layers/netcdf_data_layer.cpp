@@ -40,20 +40,20 @@ namespace caffe {
 		//determine layer size
 		int top_size = this->layer_param_.top_size();
 		netcdf_blobs_.resize(top_size);
-		
+	        int time_stride = this->layer_param_.netcdf_data_param().time_stride();	
 		const int MIN_DATA_DIM = 1;
 		const int MAX_DATA_DIM = INT_MAX;
 		
 		for (int i = 0; i < top_size; ++i) netcdf_blobs_[i] = shared_ptr<Blob<Dtype> >(new Blob<Dtype>());
 		if(!first_dim_is_batched_){
 			for (int i = 0; i < top_size; ++i) {
-				netcdf_load_nd_dataset(file_id, netcdf_variables_,
+				netcdf_load_nd_dataset(file_id, netcdf_variables_,time_stride,
 										MIN_DATA_DIM, MAX_DATA_DIM, netcdf_blobs_[i].get());
 			}
 		}
 		else{
 			for (int i = 0; i < top_size; ++i) {
-				netcdf_load_nd_dataset_transposed(file_id, netcdf_variables_,
+				netcdf_load_nd_dataset_transposed(file_id, netcdf_variables_,time_stride,
 										MIN_DATA_DIM, MAX_DATA_DIM, netcdf_blobs_[i].get());
 			}
 		}

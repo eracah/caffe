@@ -64,7 +64,7 @@ namespace caffe {
   
 	// Verifies format of data stored in NetCDF file and reshapes blob accordingly.
 	template <typename Dtype>
-	void netcdf_load_nd_dataset_helper(const int& file_id, const std::vector<string>& netcdf_variables_, std::vector<int>& dset_ids, 
+	void netcdf_load_nd_dataset_helper(const int& file_id, const std::vector<string>& netcdf_variables_, std::vector<int>& dset_ids,const int& time_stride, 
 	const int& min_dim, const int& max_dim, std::vector<size_t>& dims, nc_type& vtype, Blob<Dtype>* blob, const bool& transpose) {
     
 		// Obtain all sizes for variable 0:
@@ -114,14 +114,14 @@ namespace caffe {
 	}
 
 	template <>
-	void netcdf_load_nd_dataset<float>(const int& file_id, const std::vector<string>& netcdf_variables_, 
+	void netcdf_load_nd_dataset<float>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
 	const int& min_dim, const int& max_dim, Blob<float>* blob) {
 		
 		//query the data and get some dimensions
 		std::vector<int> dset_ids(netcdf_variables_.size());
 		std::vector<size_t> dims;
 		nc_type vtype;
-		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, min_dim, max_dim, dims, vtype, blob);
+		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids,time_stride, min_dim, max_dim, dims, vtype, blob);
 		
 		//create start vector for Hyperslab-IO:
 		std::vector<size_t> start(dims.size());
@@ -172,7 +172,7 @@ namespace caffe {
 	
 	//this one transposes dims 0 and 1, important if the 1st dimension shouldbe batched as well.
 	template <>
-	void netcdf_load_nd_dataset_transposed<float>(const int& file_id, const std::vector<string>& netcdf_variables_, 
+	void netcdf_load_nd_dataset_transposed<float>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
 	const int& min_dim, const int& max_dim, Blob<float>* blob) {
 		
 		//query the data and get some dimensions
@@ -180,7 +180,7 @@ namespace caffe {
 		std::vector<int> dset_ids(numvars);
 		std::vector<size_t> dims;
 		nc_type vtype;
-		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, min_dim, max_dim, dims, vtype, blob, true);
+		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride, min_dim, max_dim, dims, vtype, blob, true);
 		
 		//create start vector for Hyperslab-IO:
 		std::vector<size_t> start(dims.size()), count(dims);
@@ -241,13 +241,13 @@ namespace caffe {
 	}
 
 	template <>
-	void netcdf_load_nd_dataset<double>(const int& file_id, const std::vector<string>& netcdf_variables_, 
+	void netcdf_load_nd_dataset<double>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
 	const int& min_dim, const int& max_dim, Blob<double>* blob) {
 		//query the data and get some dimensions
 		std::vector<int> dset_ids(netcdf_variables_.size());
 		std::vector<size_t> dims;
 		nc_type vtype;
-		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, min_dim, max_dim, dims, vtype, blob);
+		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride, min_dim, max_dim, dims, vtype, blob);
 		
 		//create start vector for Hyperslab-IO:
 		std::vector<size_t> start(dims.size());
@@ -296,14 +296,14 @@ namespace caffe {
 
 
 	template <>
-	void netcdf_load_nd_dataset_transposed<double>(const int& file_id, const std::vector<string>& netcdf_variables_, 
+	void netcdf_load_nd_dataset_transposed<double>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
 	const int& min_dim, const int& max_dim, Blob<double>* blob) {
 		//query the data and get some dimensions
 		unsigned int numvars=netcdf_variables_.size();
 		std::vector<int> dset_ids(numvars);
 		std::vector<size_t> dims;
 		nc_type vtype;
-		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, min_dim, max_dim, dims, vtype, blob, true);
+		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride,  min_dim, max_dim, dims, vtype, blob, true);
 		
 		//create start vector for Hyperslab-IO:
 		std::vector<size_t> start(dims.size()), count(dims);
