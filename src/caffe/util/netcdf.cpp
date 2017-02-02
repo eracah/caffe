@@ -134,38 +134,6 @@ namespace caffe {
 				}
 			}
 		}
-		else if(vtype == NC_DOUBLE){
-			//conversion necessary
-			double* buf=new double[offset];
-			for(unsigned int d=0; d<dims[0]; d++){
-				start[0]=d;
-				for(unsigned int i=0; i<numvars; i++){	
-					int status = nc_get_vara_double(file_id, dset_ids[i], start.data(), count.data(), buf);
-					check_var_status(status,netcdf_variables_[i]);
-#pragma omp parallel for
-					for(unsigned int k=0; k<offset; k++){
-						blob->mutable_cpu_data()[k+offset*(i+numvars*d)]=static_cast<float>(buf[k]);
-					}
-				}
-			}
-			delete [] buf;
-		}
-		else if( (vtype == NC_INT) || (vtype == NC_LONG) ){
-			//conversion necessary
-			int* buf=new int[offset];
-			for(unsigned int d=0; d<dims[0]; d++){
-				start[0]=d;
-				for(unsigned int i=0; i<numvars; i++){
-					int status = nc_get_vara_int(file_id, dset_ids[i], start.data(), count.data(), buf);
-					check_var_status(status,netcdf_variables_[i]);
-#pragma omp parallel for
-					for(unsigned int k=0; k<offset; k++){
-						blob->mutable_cpu_data()[k+offset*(i+numvars*d)]=static_cast<float>(buf[k]);
-					}
-				}
-			}
-			delete [] buf;
-		}
 		else{
 			DLOG(FATAL) << "Unsupported datatype";
 		}
@@ -201,38 +169,6 @@ namespace caffe {
 					check_var_status(status,netcdf_variables_[i]);
 				}
 			}
-		}
-		else if(vtype == NC_FLOAT){
-			//conversion necessary
-			float* buf=new float[offset];
-			for(unsigned int d=0; d<dims[0]; d++){
-				start[0]=d;
-				for(unsigned int i=0; i<numvars; i++){	
-					int status = nc_get_vara_float(file_id, dset_ids[i], start.data(), count.data(), buf);
-					check_var_status(status,netcdf_variables_[i]);
-#pragma omp parallel for
-					for(unsigned int k=0; k<offset; k++){
-						blob->mutable_cpu_data()[k+offset*(i+numvars*d)]=static_cast<double>(buf[k]);
-					}
-				}
-			}
-			delete [] buf;
-		}
-		else if( (vtype == NC_INT) || (vtype == NC_LONG) ){
-			//conversion necessary
-			int* buf=new int[offset];
-			for(unsigned int d=0; d<dims[0]; d++){
-				start[0]=d;
-				for(unsigned int i=0; i<numvars; i++){
-					int status = nc_get_vara_int(file_id, dset_ids[i], start.data(), count.data(), buf);
-					check_var_status(status,netcdf_variables_[i]);
-#pragma omp parallel for
-					for(unsigned int k=0; k<offset; k++){
-						blob->mutable_cpu_data()[k+offset*(i+numvars*d)]=static_cast<double>(buf[k]);
-					}
-				}
-			}
-			delete [] buf;
 		}
 		else{
 			DLOG(FATAL) << "Unsupported datatype";
