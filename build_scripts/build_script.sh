@@ -8,5 +8,5 @@ cd ../caffe_built
 export PATH=/usr/common/software/python/2.7-anaconda/envs/caffe_env/bin/:$PATH
 make clean
 make all -j 12
-make pycaffe
+make pycaffe CFLAGS='-w'
 

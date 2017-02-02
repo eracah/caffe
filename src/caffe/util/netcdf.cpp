@@ -101,63 +101,6 @@ namespace caffe {
 		}
 	}
 
-	template <>
-	void netcdf_load_nd_dataset<float>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
-	const int& min_dim, const int& max_dim, Blob<float>* blob) {
-		
-		//query the data and get some dimensions
-		std::vector<int> dset_ids(netcdf_variables_.size());
-		std::vector<size_t> dims;
-		nc_type vtype;
-		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids,time_stride, min_dim, max_dim, dims, vtype, blob);
-		
-		//create start vector for Hyperslab-IO:
-		std::vector<size_t> start(dims.size());
-		unsigned long offset=1;
-		for(unsigned int i=0; i<dims.size(); i++){
-			offset*=dims[i];
-			start[i]=0;
-		}
-		
-		//read the data
-		if(vtype == NC_FLOAT){
-			//direct read possible
-			for(unsigned int i=0; i<netcdf_variables_.size(); i++){
-				int status = nc_get_vara_float(file_id, dset_ids[i], start.data(), dims.data(), &(blob->mutable_cpu_data()[i*offset]));
-				check_var_status(status,netcdf_variables_[i]);
-			}
-		}
-		else if(vtype == NC_DOUBLE){
-			//conversion necessary
-			double* buf=new double[offset];
-			for(unsigned int i=0; i<netcdf_variables_.size(); i++){	
-				int status = nc_get_vara_double(file_id, dset_ids[i], start.data(), dims.data(), buf);
-				check_var_status(status,netcdf_variables_[i]);
-#pragma omp parallel for
-				for(unsigned int k=0; k<offset; k++){
-					blob->mutable_cpu_data()[k+i*offset]=static_cast<float>(buf[k]);
-				}
-			}
-			delete [] buf;
-		}
-		else if( (vtype == NC_INT) || (vtype == NC_LONG) ){
-			//conversion necessary
-			int* buf=new int[offset];
-			for(unsigned int i=0; i<netcdf_variables_.size(); i++){
-				int status = nc_get_vara_int(file_id, dset_ids[i], start.data(), dims.data(), buf);
-				check_var_status(status,netcdf_variables_[i]);
-#pragma omp parallel for
-				for(unsigned int k=0; k<offset; k++){
-					blob->mutable_cpu_data()[k+i*offset]=static_cast<float>(buf[k]);
-				}
-			}
-			delete [] buf;
-		}
-		else{
-			DLOG(FATAL) << "Unsupported datatype";
-		}
-	}
-	
 	//this one transposes dims 0 and 1, important if the 1st dimension shouldbe batched as well.
 	template <>
 	void netcdf_load_nd_dataset_transposed<float>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
@@ -219,60 +162,6 @@ namespace caffe {
 					for(unsigned int k=0; k<offset; k++){
 						blob->mutable_cpu_data()[k+offset*(i+numvars*d)]=static_cast<float>(buf[k]);
 					}
-				}
-			}
-			delete [] buf;
-		}
-		else{
-			DLOG(FATAL) << "Unsupported datatype";
-		}
-	}
-
-	template <>
-	void netcdf_load_nd_dataset<double>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
-	const int& min_dim, const int& max_dim, Blob<double>* blob) {
-		//query the data and get some dimensions
-		std::vector<int> dset_ids(netcdf_variables_.size());
-		std::vector<size_t> dims;
-		nc_type vtype;
-		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride, min_dim, max_dim, dims, vtype, blob);
-		
-		//create start vector for Hyperslab-IO:
-		std::vector<size_t> start(dims.size());
-		unsigned long offset=1;
-		for(unsigned int i=0; i<dims.size(); i++){
-			offset*=dims[i];
-			start[i]=0;
-		}
-		//read the data
-		if(vtype == NC_DOUBLE){
-			for(unsigned int i=0; i<netcdf_variables_.size(); i++){	
-				int status = nc_get_vara_double(file_id, dset_ids[i], start.data(), dims.data(), &(blob->mutable_cpu_data()[i*offset]));
-				check_var_status(status,netcdf_variables_[i]);
-			}
-		}
-		else if(vtype == NC_FLOAT){
-			//conversion necessary
-			float* buf=new float[offset];
-			for(unsigned int i=0; i<netcdf_variables_.size(); i++){	
-				int status = nc_get_vara_float(file_id, dset_ids[i], start.data(), dims.data(), buf);
-				check_var_status(status,netcdf_variables_[i]);
-#pragma omp parallel for
-				for(unsigned int k=0; k<offset; k++){
-					blob->mutable_cpu_data()[k+i*offset]=static_cast<double>(buf[k]);
-				}
-			}
-			delete [] buf;
-		}
-		else if( (vtype == NC_INT) || (vtype == NC_LONG) ){
-			//conversion necessary
-			int* buf=new int[offset];
-			for(unsigned int i=0; i<netcdf_variables_.size(); i++){
-				int status = nc_get_vara_int(file_id, dset_ids[i], start.data(), dims.data(), buf);
-				check_var_status(status,netcdf_variables_[i]);
-#pragma omp parallel for
-				for(unsigned int k=0; k<offset; k++){
-					blob->mutable_cpu_data()[k+i*offset]=static_cast<double>(buf[k]);
 				}
 			}
 			delete [] buf;

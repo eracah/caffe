@@ -44,19 +44,13 @@ namespace caffe {
 		const int MIN_DATA_DIM = 1;
 		const int MAX_DATA_DIM = INT_MAX;
 		
-		for (int i = 0; i < top_size; ++i) netcdf_blobs_[i] = shared_ptr<Blob<Dtype> >(new Blob<Dtype>());
-		if(!first_dim_is_batched_){
-			for (int i = 0; i < top_size; ++i) {
-				netcdf_load_nd_dataset(file_id, netcdf_variables_,time_stride,
+		for (int i = 0; i < top_size; ++i) 
+			netcdf_blobs_[i] = shared_ptr<Blob<Dtype> >(new Blob<Dtype>());
+		
+		for (int i = 0; i < top_size; ++i)
+			netcdf_load_nd_dataset_transposed(file_id, netcdf_variables_,time_stride,
 										MIN_DATA_DIM, MAX_DATA_DIM, netcdf_blobs_[i].get());
-			}
-		}
-		else{
-			for (int i = 0; i < top_size; ++i) {
-				netcdf_load_nd_dataset_transposed(file_id, netcdf_variables_,time_stride,
-										MIN_DATA_DIM, MAX_DATA_DIM, netcdf_blobs_[i].get());
-			}
-		}
+		
 		
 		//close the file
 		retval = nc_close(file_id);
@@ -66,12 +60,6 @@ namespace caffe {
 		
 		// MinTopBlobs==1 guarantees at least one top blob
 		CHECK_GE(netcdf_blobs_[0]->num_axes(), 1) << "Input must have at least 1 axis.";
-		//const int num = netcdf_blobs_[0]->shape(0);
-		//for (int i = 1; i < top_size; ++i) {
-		//	CHECK_EQ(netcdf_blobs_[i]->shape(0), num);
-		//}
-		
-		// Default to identity permutation. note, only relevant if first dim is batched, otherwise it won't be used.
 		data_permutation_.clear();
 		data_permutation_.resize(netcdf_blobs_[0]->shape(0));
 		for (int i = 0; i < netcdf_blobs_[0]->shape(0); i++){
