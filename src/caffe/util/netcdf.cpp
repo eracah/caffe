@@ -53,7 +53,7 @@ namespace caffe {
 	// Verifies format of data stored in NetCDF file and reshapes blob accordingly.
 	template <typename Dtype>
 	void netcdf_load_nd_dataset_helper(const int& file_id, const std::vector<string>& netcdf_variables_, std::vector<int>& dset_ids,const int& time_stride, 
-	const int& min_dim, const int& max_dim, std::vector<size_t>& dims, nc_type& vtype, Blob<Dtype>* blob, const bool& transpose) {
+	const int& min_dim, const int& max_dim, std::vector<size_t>& dims, nc_type& vtype, Blob<Dtype>* blob) {
     
 		// Obtain all sizes for variable 0:
 		string variable_name_=netcdf_variables_[0];
@@ -75,18 +75,10 @@ namespace caffe {
 		//set blob dimensions and reshape
 		vector<int> blob_dims(dims.size()+1);
 		//first dimension is channel dimension
-		if(!transpose){
-			blob_dims[0]=static_cast<int>(netcdf_variables_.size());
-			for (int i = 1; i <= dims.size(); ++i) {
-				blob_dims[i] = dims[i-1];
-			}
-		}
-		else{
-			blob_dims[0]=dims[0];
-			blob_dims[1]=static_cast<int>(netcdf_variables_.size());
-			for (int i = 2; i <= dims.size(); ++i) {
-				blob_dims[i] = dims[i-1];
-			}
+		blob_dims[0]=dims[0];
+		blob_dims[1]=static_cast<int>(netcdf_variables_.size());
+		for (int i = 2; i <= dims.size(); ++i) {
+			blob_dims[i] = dims[i-1];
 		}
 		blob->Reshape(blob_dims);
 	}
@@ -111,7 +103,7 @@ namespace caffe {
 		std::vector<int> dset_ids(numvars);
 		std::vector<size_t> dims;
 		nc_type vtype;
-		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride, min_dim, max_dim, dims, vtype, blob, true);
+		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride, min_dim, max_dim, dims, vtype, blob);
 		
 		//create start vector for Hyperslab-IO:
 		std::vector<size_t> start(dims.size()), count(dims);
@@ -148,7 +140,7 @@ namespace caffe {
 		std::vector<int> dset_ids(numvars);
 		std::vector<size_t> dims;
 		nc_type vtype;
-		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride,  min_dim, max_dim, dims, vtype, blob, true);
+		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride,  min_dim, max_dim, dims, vtype, blob);
 		
 		//create start vector for Hyperslab-IO:
 		std::vector<size_t> start(dims.size()), count(dims);

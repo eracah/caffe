@@ -19,7 +19,7 @@ namespace caffe {
 
 	template <typename Dtype>
 	void netcdf_load_nd_dataset_helper(const int& file_id, const std::vector<string>& netcdf_variables_, std::vector<int>& dset_ids,const int& time_stride,
-										const int& min_dim, const int& max_dim, std::vector<size_t>& dims, nc_type& vtype_, Blob<Dtype>* blob, const bool& transpose=false);
+										const int& min_dim, const int& max_dim, std::vector<size_t>& dims, nc_type& vtype_, Blob<Dtype>* blob);
 
 	
 	template <typename Dtype>
