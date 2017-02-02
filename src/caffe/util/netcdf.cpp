@@ -135,36 +135,7 @@ namespace caffe {
 	template <>
 	void netcdf_load_nd_dataset<double>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
 	const int& min_dim, const int& max_dim, Blob<double>* blob) {
-		//query the data and get some dimensions
-		unsigned int numvars=netcdf_variables_.size();
-		std::vector<int> dset_ids(numvars);
-		std::vector<size_t> dims;
-		nc_type vtype;
-		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride,  min_dim, max_dim, dims, vtype, blob);
-		
-		//create start vector for Hyperslab-IO:
-		std::vector<size_t> start(dims.size()), count(dims);
-		unsigned long offset=1;
-		//starts at dim1, because dim0 will be considered singleton
-		for(unsigned int i=1; i<dims.size(); i++){
-			offset*=dims[i];
-			start[i]=0;
-		}
-		count[0]=1;
-		
-		//read the data
-		if(vtype == NC_DOUBLE){
-			for(unsigned int d=0; d<dims[0]; d++){
-				start[0]=d;
-				for(unsigned int i=0; i<numvars; i++){	
-					int status = nc_get_vara_double(file_id, dset_ids[i], start.data(), count.data(), &(blob->mutable_cpu_data()[offset*(i+numvars*d)]));
-					check_var_status(status,netcdf_variables_[i]);
-				}
-			}
-		}
-		else{
-			DLOG(FATAL) << "Unsupported datatype";
-		}
+			DLOG(FATAL) << "Not implemented";
 	}
 
 
