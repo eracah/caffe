@@ -27,18 +27,6 @@ namespace caffe {
 		std::vector<int> dimids(ndims);
 		status = nc_inq_vardimid(file_id, dset_id, dimids.data());
 
-		//query unlimited dimensions
-		//int ndims_unlimited;
-		//std::vector<int> dimids_unlimited;
-		//status = nc_inq_unlimdims(file_id, &ndims_unlimited, dimids_unlimited.data());
-		//CHECK(status != NC_ENOTNC4) << "netCDF-4 operation on netCDF-3 file performed for variable " << variable_name_;
-		//for(unsigned int i=0; i<dimids_unlimited.size(); i++){
-		//	std::cout << i << " " << dimids_unlimited[i] << std::endl;
-		//}
-		//for(unsigned int i=0; i<dimids.size(); i++){
-		//	std::cout << i << " " << dimids[i] << std::endl;
-		//}
-
 		//get size of dimensions
 		dims.resize(ndims);
 		for(unsigned int i=0; i<ndims; ++i){
@@ -362,47 +350,6 @@ namespace caffe {
 		}
 	}
 
-	//template <>
-	//void netcdf_save_nd_dataset<float>(
-	//	const hid_t file_id, const string& dataset_name, const Blob<float>& blob,
-	//bool write_diff) {
-	//	int num_axes = blob.num_axes();
-	//	hsize_t *dims = new hsize_t[num_axes];
-	//	for (int i = 0; i < num_axes; ++i) {
-	//		dims[i] = blob.shape(i);
-	//	}
-	//	const float* data;
-	//	if (write_diff) {
-	//		data = blob.cpu_diff();
-	//	} else {
-	//		data = blob.cpu_data();
-	//	}
-	//	herr_t status = H5LTmake_dataset_float(
-	//		file_id, dataset_name.c_str(), num_axes, dims, data);
-	//	CHECK_GE(status, 0) << "Failed to make float dataset " << dataset_name;
-	//	delete[] dims;
-	//}
-	//
-	//template <>
-	//void netcdf_save_nd_dataset<double>(
-	//	hid_t file_id, const string& dataset_name, const Blob<double>& blob,
-	//bool write_diff) {
-	//	int num_axes = blob.num_axes();
-	//	hsize_t *dims = new hsize_t[num_axes];
-	//	for (int i = 0; i < num_axes; ++i) {
-	//		dims[i] = blob.shape(i);
-	//	}
-	//	const double* data;
-	//	if (write_diff) {
-	//		data = blob.cpu_diff();
-	//	} else {
-	//		data = blob.cpu_data();
-	//	}
-	//	herr_t status = H5LTmake_dataset_double(
-	//		file_id, dataset_name.c_str(), num_axes, dims, data);
-	//	CHECK_GE(status, 0) << "Failed to make double dataset " << dataset_name;
-	//	delete[] dims;
-	//}
 
 	string netcdf_load_string(int loc_id, const string& variable_name_) {
 		// Verify that the dataset exists.
@@ -417,13 +364,6 @@ namespace caffe {
 		return val;
 	}
 
-	//void netcdf_save_string(hid_t loc_id, const string& dataset_name,
-	//const string& s) {
-	//	herr_t status = \
-	//		H5LTmake_dataset_string(loc_id, dataset_name.c_str(), s.c_str());
-	//	CHECK_GE(status, 0)
-	//		<< "Failed to save string dataset with name " << dataset_name;
-	//}
 
 	int netcdf_load_int(int loc_id, const string& variable_name_) {
 		int dset_id;
@@ -435,34 +375,7 @@ namespace caffe {
 		return val;
 	}
 
-	//void netcdf_save_int(hid_t loc_id, const string& dataset_name, int i) {
-	//	hsize_t one = 1;
-	//	herr_t status = \
-	//		H5LTmake_dataset_int(loc_id, dataset_name.c_str(), 1, &one, &i);
-	//	CHECK_GE(status, 0)
-	//		<< "Failed to save int dataset with name " << dataset_name;
-	//}
 
-	//int netcdf_get_num_links(hid_t loc_id) {
-	//	H5G_info_t info;
-	//	herr_t status = H5Gget_info(loc_id, &info);
-	//	CHECK_GE(status, 0) << "Error while counting NetCDF links.";
-	//	return info.nlinks;
-	//}
-
-	//string netcdf_get_name_by_idx(hid_t loc_id, int idx) {
-	//	ssize_t str_size = H5Lget_name_by_idx(
-	//		loc_id, ".", H5_INDEX_NAME, H5_ITER_NATIVE, idx, NULL, 0, H5P_DEFAULT);
-	//	CHECK_GE(str_size, 0) << "Error retrieving NetCDF variable at index " << idx;
-	//	char *c_str = new char[str_size+1];
-	//	ssize_t status = H5Lget_name_by_idx(
-	//		loc_id, ".", H5_INDEX_NAME, H5_ITER_NATIVE, idx, c_str, str_size+1,
-	//	H5P_DEFAULT);
-	//	CHECK_GE(status, 0) << "Error retrieving NetCDF variable at index " << idx;
-	//	string result(c_str);
-	//	delete[] c_str;
-	//	return result;
-	//}
 
 }  // namespace caffe
 #endif
