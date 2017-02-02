@@ -48,9 +48,9 @@ namespace caffe {
 			netcdf_blobs_[i] = shared_ptr<Blob<Dtype> >(new Blob<Dtype>());
 		
 		for (int i = 0; i < top_size; ++i)
-			netcdf_load_nd_dataset_transposed(file_id, netcdf_variables_,time_stride,
+			netcdf_load_nd_dataset(file_id, netcdf_variables_,time_stride,
 										MIN_DATA_DIM, MAX_DATA_DIM, netcdf_blobs_[i].get());
-		
+	
 		
 		//close the file
 		retval = nc_close(file_id);

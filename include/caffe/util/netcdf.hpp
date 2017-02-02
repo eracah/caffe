@@ -23,10 +23,8 @@ namespace caffe {
 
 	
 	template <typename Dtype>
-	void netcdf_load_nd_dataset_transposed(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, const int& min_dim, const int& max_dim, Blob<Dtype>* blob);
+	void netcdf_load_nd_dataset(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, const int& min_dim, const int& max_dim, Blob<Dtype>* blob);
 
-	int netcdf_load_int(int loc_id, const string& variable_name);
-	string netcdf_load_string(int loc_id, const string& variable_name);
 
 
 

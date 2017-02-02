@@ -103,7 +103,7 @@ namespace caffe {
 
 	//this one transposes dims 0 and 1, important if the 1st dimension shouldbe batched as well.
 	template <>
-	void netcdf_load_nd_dataset_transposed<float>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
+	void netcdf_load_nd_dataset<float>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
 	const int& min_dim, const int& max_dim, Blob<float>* blob) {
 		
 		//query the data and get some dimensions
@@ -141,7 +141,7 @@ namespace caffe {
 
 
 	template <>
-	void netcdf_load_nd_dataset_transposed<double>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
+	void netcdf_load_nd_dataset<double>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
 	const int& min_dim, const int& max_dim, Blob<double>* blob) {
 		//query the data and get some dimensions
 		unsigned int numvars=netcdf_variables_.size();
@@ -176,29 +176,6 @@ namespace caffe {
 	}
 
 
-	string netcdf_load_string(int loc_id, const string& variable_name_) {
-		// Verify that the dataset exists.
-		int dset_id;
-		CHECK_GT(nc_inq_varid(loc_id, variable_name_.c_str(), &dset_id),0) << "Failed to find NetCDF variable " << variable_name_;
-		
-		// Get size of dataset
-		char* buffer;
-		int status = nc_get_var_string(loc_id, dset_id, &buffer);
-		string val(buffer);
-		delete [] buffer;
-		return val;
-	}
-
-
-	int netcdf_load_int(int loc_id, const string& variable_name_) {
-		int dset_id;
-		CHECK_GT(nc_inq_varid(loc_id, variable_name_.c_str(), &dset_id),0) << "Failed to find NetCDF variable " << variable_name_;
-		
-		int val;
-		int status = nc_get_var_int(loc_id, dset_id, &val);
-		CHECK_GT(status, 0) << "Failed to load int variable " << variable_name_;
-		return val;
-	}
 
 
 
