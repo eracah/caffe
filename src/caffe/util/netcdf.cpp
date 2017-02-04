@@ -72,15 +72,6 @@ namespace caffe {
 			CHECK_EQ(vtype,tmpvtype) << "Datatypes of variable " << netcdf_variables_[0] << " and " << variable_name_ << " do not agree!";
 		}
 		
-		//set blob dimensions and reshape
-		vector<int> blob_dims(dims.size()+1);
-		//first dimension is channel dimension
-		blob_dims[0]=dims[0];
-		blob_dims[1]=static_cast<int>(netcdf_variables_.size());
-		for (int i = 2; i <= dims.size(); ++i) {
-			blob_dims[i] = dims[i-1];
-		}
-		blob->Reshape(blob_dims);
 	}
 	
 	inline void check_var_status(const int& status, const std::string& varname){
@@ -105,24 +96,35 @@ namespace caffe {
 		nc_type vtype;
 		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride, min_dim, max_dim, dims, vtype, blob);
 		
+		size_t num_dims = dims.size();
+                int  num_time_steps_in_file = dims[0];
+                int xdim = dims[1];
+                int ydim = dims[2];
+		vector<int> blob_dims(dims.size()+1);
+		int num_blob_time_steps = num_time_steps_in_file / time_stride;
+                //first dimension is channel dimension
+                blob_dims[0] = num_blob_time_steps;
+                blob_dims[1] = numvars;
+                blob_dims[2] = xdim;
+                blob_dims[3] = ydim;
+		blob->Reshape(blob_dims);
 		//create start vector for Hyperslab-IO:
 		std::vector<size_t> start(dims.size()), count(dims);
 		unsigned long offset=1;
 		//starts at dim1, because dim0 will be considered singleton
-		for(unsigned int i=1; i<dims.size(); i++){
+		for(unsigned int i=1; i<num_dims; i++){
 			offset*=dims[i];
 			start[i]=0;
 		}
-		count[0]=1;
-		
+		count[0]=1;	
 		//read the data
 		if(vtype == NC_FLOAT){
 			//direct read possible
-			for(unsigned int d=0; d<dims[0]; d++){
-				start[0]=d;
-				for(unsigned int i=0; i<numvars; i++){
-					int status = nc_get_vara_float(file_id, dset_ids[i], start.data(), count.data(), &(blob->mutable_cpu_data()[offset*(i+numvars*d)]));
-					check_var_status(status,netcdf_variables_[i]);
+			for(unsigned int time=0; time<num_blob_time_steps; time++){
+				start[0]=time * time_stride;
+				for(unsigned int var=0; var<numvars; var++){
+					int status = nc_get_vara_float(file_id, dset_ids[var], start.data(), count.data(), &(blob->mutable_cpu_data()[offset*(var+numvars*time)]));
+					check_var_status(status,netcdf_variables_[var]);
 				}
 			}
 		}
