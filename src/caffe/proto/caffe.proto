@@ -790,6 +790,7 @@ message NetCDFDataParameter {
   optional bool shuffle = 5 [default = false];                                                        
 
 }
+
 message ImageDataParameter {
   // Specify the data source.
   optional string source = 1;
