@@ -49,7 +49,6 @@ namespace caffe {
 			LOG(FATAL) << "Unsupported Datatype " << vtype_ << " for variable " << variable_name_;
 		}
 	}
-  
 	// Verifies format of data stored in NetCDF file and reshapes blob accordingly.
 	template <typename Dtype>
 	void netcdf_load_nd_dataset_helper(const int& file_id, const std::vector<string>& netcdf_variables_, std::vector<int>& dset_ids,const int& time_stride, 
@@ -86,7 +85,7 @@ namespace caffe {
 
 	//this one transposes dims 0 and 1, important if the 1st dimension shouldbe batched as well.
 	template <>
-	void netcdf_load_nd_dataset<float>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
+	void netcdf_load_nd_dataset<float>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride,const int & xdim, const int & ydim, const int & crop_index, 
 	const int& min_dim, const int& max_dim, Blob<float>* blob) {
 		
 		//query the data and get some dimensions
@@ -95,11 +94,11 @@ namespace caffe {
 		std::vector<size_t> dims;
 		nc_type vtype;
 		netcdf_load_nd_dataset_helper(file_id, netcdf_variables_, dset_ids, time_stride, min_dim, max_dim, dims, vtype, blob);
-		
+	        std::cerr << "xdim:  " << xdim << "ydim: ";	
 		size_t num_dims = dims.size();
                 int  num_time_steps_in_file = dims[0];
-                int xdim = dims[1];
-                int ydim = dims[2];
+                //int xdim = dims[1];
+                //int ydim = dims[2];
 		vector<int> blob_dims(dims.size()+1);
 		int num_blob_time_steps = num_time_steps_in_file / time_stride;
                 //first dimension is channel dimension
@@ -135,7 +134,7 @@ namespace caffe {
 
 
 	template <>
-	void netcdf_load_nd_dataset<double>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride, 
+	void netcdf_load_nd_dataset<double>(const int& file_id, const std::vector<string>& netcdf_variables_,const int& time_stride,const int & xdim, const int & ydim, const int & crop_index, 
 	const int& min_dim, const int& max_dim, Blob<double>* blob) {
 			DLOG(FATAL) << "Not implemented";
 	}

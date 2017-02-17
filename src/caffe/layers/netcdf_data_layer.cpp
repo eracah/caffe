@@ -40,7 +40,10 @@ namespace caffe {
 		//determine layer size
 		int top_size = this->layer_param_.top_size();
 		netcdf_blobs_.resize(top_size);
-	        int time_stride = this->layer_param_.netcdf_data_param().time_stride();	
+	        int time_stride = this->layer_param_.netcdf_data_param().time_stride();
+		int xdim = this->layer_param_.netcdf_data_param().xdim();
+		int ydim = this->layer_param_.netcdf_data_param().ydim();
+		int crop_index = this->layer_param_.netcdf_data_param().crop_index();	
 		const int MIN_DATA_DIM = 1;
 		const int MAX_DATA_DIM = INT_MAX;
 		
@@ -48,7 +51,7 @@ namespace caffe {
 			netcdf_blobs_[i] = shared_ptr<Blob<Dtype> >(new Blob<Dtype>());
 		
 		for (int i = 0; i < top_size; ++i)
-			netcdf_load_nd_dataset(file_id, netcdf_variables_,time_stride,
+			netcdf_load_nd_dataset(file_id, netcdf_variables_,time_stride,xdim,ydim,crop_index,
 										MIN_DATA_DIM, MAX_DATA_DIM, netcdf_blobs_[i].get());
 	
 		
