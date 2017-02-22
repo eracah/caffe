@@ -790,7 +790,8 @@ message NetCDFDataParameter {
   optional bool shuffle = 5 [default = false];                                                        
   optional uint32 xdim = 6;
   optional uint32 ydim = 7;
-  optional uint32 crop_index = 8 [default = 0]; 
+  optional uint32 time_dim = 8 [default = 8];
+  optional uint32 crop_index = 9 [default = 0]; 
 }
 
 message ImageDataParameter {
