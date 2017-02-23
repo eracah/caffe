@@ -48,9 +48,10 @@ namespace caffe {
 		const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {}
 		virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
 		const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {}
-		virtual void LoadNetCDFFileData(const char* filename);
+		virtual void LoadNetCDFFileData(const char* filename, const int crop_index);
 
 		std::vector<std::string> netcdf_filenames_;
+		std::vector<int> netcdf_crop_indices_;
 		std::vector<std::string>  netcdf_variables_;
 		unsigned int num_dimensions_, num_variables_;
 		unsigned int num_files_;

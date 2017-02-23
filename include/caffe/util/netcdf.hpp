@@ -18,13 +18,14 @@ namespace caffe {
 
         template <typename Dtype>
         void netcdf_load_nd_dataset(const int& file_id,
-							         const std::vector<string>& netcdf_variables_,
-							         const int& time_stride,
-							         const int & xdim, 
-							         const int & ydim,
-							         const int &timedim,
-							         const int & crop_index, 
-							         Blob<Dtype>* blob);
+                                        const std::vector<string>& netcdf_variables_,
+                                        const int& time_stride,
+                                        const int & xdim,
+                                        const int & ydim,
+                                        const int & timedim,
+                                        const int & crop_index,
+                                        const int & crop_stride,
+                                        Blob<Dtype>* blob);
 
 
 

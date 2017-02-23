@@ -791,7 +791,8 @@ message NetCDFDataParameter {
   optional uint32 xdim = 6;
   optional uint32 ydim = 7;
   optional uint32 time_dim = 8 [default = 8];
-  optional uint32 crop_index = 9 [default = 0]; 
+  optional string crop_index_source = 9;
+  optional uint32 crop_stride = 10 [ default = 1]; 
 }
 
 message ImageDataParameter {

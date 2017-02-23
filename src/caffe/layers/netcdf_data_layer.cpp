@@ -22,7 +22,7 @@ namespace caffe {
 
 	// Load data and label from netcdf filename into the class property blobs.
 	template <typename Dtype>
-	void NetCDFDataLayer<Dtype>::LoadNetCDFFileData(const char* filename) {
+	void NetCDFDataLayer<Dtype>::LoadNetCDFFileData(const char* filename, const int crop_index) {
 		int file_id;
 	
 		//load netcdf file:
@@ -43,13 +43,13 @@ namespace caffe {
 	        int time_stride = this->layer_param_.netcdf_data_param().time_stride();
 		int xdim = this->layer_param_.netcdf_data_param().xdim();
 		int ydim = this->layer_param_.netcdf_data_param().ydim();
-		int crop_index = this->layer_param_.netcdf_data_param().crop_index();	
+		int crop_stride = this->layer_param_.netcdf_data_param().crop_stride();	
 		int time_dim = this->layer_param_.netcdf_data_param().time_dim();		
 		for (int i = 0; i < top_size; ++i) 
 			netcdf_blobs_[i] = shared_ptr<Blob<Dtype> >(new Blob<Dtype>());
 		
 		for (int i = 0; i < top_size; ++i)
-			netcdf_load_nd_dataset(file_id, netcdf_variables_,time_stride,xdim,ydim, time_dim, crop_index, netcdf_blobs_[i].get());
+			netcdf_load_nd_dataset(file_id, netcdf_variables_,time_stride,xdim,ydim, time_dim, crop_index,crop_stride, netcdf_blobs_[i].get());
 	
 		
 		//close the file
@@ -88,6 +88,7 @@ namespace caffe {
 		if (input.is_open()) {
 			std::string line;
 			while (input >> line) {
+								
 				netcdf_filenames_.push_back(line);
 			}
 		} else {
@@ -99,6 +100,25 @@ namespace caffe {
 		LOG(INFO) << "Number of NetCDF files: " << num_files_;
 		CHECK_GE(num_files_, 1) << "Must have at least 1 NetCDF filename listed in " << file_list;
 		
+		// Read the source to parse the filenames.
+                const string& crop_index_list = this->layer_param_.netcdf_data_param().crop_index_source();
+                LOG(INFO) << "Loading list of Crop Indices from: " << crop_index_list;
+                netcdf_crop_indices_.clear();
+                std::ifstream crop_input(crop_index_list.c_str());
+                if (crop_input.is_open()) {
+                        int index;
+                        while (crop_input >> index) {
+
+                                netcdf_crop_indices_.push_back(index);
+                        }
+                } else {
+                        LOG(FATAL) << "Failed to open crop_index file: " << crop_index_list;
+                }
+                crop_input.close();
+                int num_indices_ = netcdf_crop_indices_.size();
+                LOG(INFO) << "Number of crop index files: " << num_indices_;
+                CHECK_GE(num_indices_, 1) << "Must have at least 1 crop index filename listed in " << crop_index_list;
+		CHECK_EQ(num_indices_, num_files_) << "Number of files and number of crop_indices must be equal! " << num_indices_ << " " << num_files_;	
 		//get the top size
 		const int top_size = this->layer_param_.top_size();
 		
@@ -128,7 +148,7 @@ namespace caffe {
 		}
 		
 		// Load the first NetCDF file and initialize the line counter.
-		LoadNetCDFFileData(netcdf_filenames_[file_permutation_[current_file_]].c_str());
+		LoadNetCDFFileData(netcdf_filenames_[file_permutation_[current_file_]].c_str(), netcdf_crop_indices_[file_permutation_[current_file_]]);
 		
 		//current-row-counter
 		current_row_ = 0;
@@ -168,7 +188,7 @@ namespace caffe {
 						}
 						DLOG(INFO) << "Looping around to first file.";
 						}
-					LoadNetCDFFileData(netcdf_filenames_[file_permutation_[current_file_]].c_str());
+					LoadNetCDFFileData(netcdf_filenames_[file_permutation_[current_file_]].c_str(), netcdf_crop_indices_[file_permutation_[current_file_]]);
 				}
 				current_row_ = 0;
 				if (this->layer_param_.netcdf_data_param().shuffle()) std::random_shuffle(data_permutation_.begin(), data_permutation_.end());

@@ -17,6 +17,7 @@ namespace caffe {
                                         const int & ydim,
                                         const int & timedim,
                                         const int & crop_index,
+					const int & crop_stride,
                                         Blob<float>* blob) {
 
 
@@ -38,7 +39,7 @@ namespace caffe {
                 // CHECK_EQ(blob->cpu_data()[1000], -99);
 
                 unsigned long offset =  xdim * ydim;
-                size_t start[3] = {0, 0 , crop_index * 32};
+                size_t start[3] = {0, 0 , crop_index * crop_stride};
                 size_t count[3] =  {1, xdim, ydim };
                 std::cerr <<  "y start: " << start[2] << " y count: " << count[2] << std::endl;
                 int status;
@@ -84,15 +85,16 @@ namespace caffe {
 
 
         template <>
-        void netcdf_load_nd_dataset<double>(const int& file_id, 
+        void netcdf_load_nd_dataset<double>(const int& file_id,
                                         const std::vector<string>& netcdf_variables_,
                                         const int& time_stride,
-                                        const int & xdim, 
+                                        const int & xdim,
                                         const int & ydim,
-                                        const int & timedim, 
+                                        const int & timedim,
                                         const int & crop_index,
-                                        Blob<double>* blob)  {
-                        DLOG(FATAL) << "Not implemented";
+                                        const int & crop_stride,
+                                        Blob<double>* blob){   
+		DLOG(FATAL) << "Not implemented";
         }
 
         void check_status(const int& status, const std::string& name)
