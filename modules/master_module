@@ -6,7 +6,7 @@
 set		name		caffe
 set		version		master
 set		root	    /global/homes/r/racah/projects/caffe-netcdf/caffe_built
-set             req_env     /usr/common/software/python/2.7-anaconda/envs/caffe_env/
+set             req_env     /usr/common/software/python/2.7-anaconda/envs/caffe/
 ## List conflicting modules here
 
 conflict $name 

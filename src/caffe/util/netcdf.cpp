@@ -41,7 +41,7 @@ namespace caffe {
                 unsigned long offset =  xdim * ydim;
                 size_t start[3] = {0, 0 , crop_index * crop_stride};
                 size_t count[3] =  {1, xdim, ydim };
-                std::cerr <<  "y start: " << start[2] << " y count: " << count[2] << std::endl;
+                //std::cerr <<  "y start: " << start[2] << " y count: " << count[2] << std::endl;
                 int status;
                 int var_id;
                 int index;
